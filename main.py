@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 from tensorflow.keras.applications.resnet50 import preprocess_input
@@ -8,6 +9,15 @@ from werkzeug.utils import secure_filename
 
 app = FastAPI()
 
+# Allow CORS for all domains
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You can restrict this to ["http://localhost:4321"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Load model
 model = load_model("model_resnet50_1.h5")
 
@@ -16,7 +26,7 @@ UPLOAD_FOLDER = 'uploads/'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-class_labels = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]  # Ensure these are correct labels
+class_labels = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] 
 
 # Health check route
 @app.get("/")
